@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/usr/local/bin/docker compose:*)",
+      "Bash(/usr/local/bin/docker run:*)"
+    ]
+  }
+}
