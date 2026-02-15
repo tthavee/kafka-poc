@@ -16,7 +16,7 @@ Usage:
 import json
 import signal
 import sys
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, KafkaError, OFFSET_BEGINNING
 
 BOOTSTRAP_SERVERS = "localhost:9092,localhost:9094"
 TOPIC = "orders"
@@ -33,18 +33,22 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
+def on_assign(consumer, partitions):
+    """Start from the beginning only if there are no committed offsets yet."""
+    committed = consumer.committed(partitions)
+    for tp, committed_tp in zip(partitions, committed):
+        tp.offset = OFFSET_BEGINNING if committed_tp.offset < 0 else committed_tp.offset
+    consumer.assign(partitions)
+
+
 def consume():
     consumer = Consumer({
         "bootstrap.servers": BOOTSTRAP_SERVERS,
-        # A unique group id — this consumer gets its own view of the topic
-        "group.id": "basic-consumer-3",
-        # Start from the earliest message if no committed offset exists
-        "auto.offset.reset": "latest",
-        # Auto-commit offsets every 5 seconds (default)
+        "group.id": "basic-consumer-2",
         "enable.auto.commit": True,
     })
 
-    consumer.subscribe([TOPIC])
+    consumer.subscribe([TOPIC], on_assign=on_assign)
     print(f"Subscribed to '{TOPIC}'. Waiting for messages...\n")
     print(f"{'Partition':<12} {'Offset':<10} {'Key':<12} {'Order'}")
     print("-" * 70)

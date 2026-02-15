@@ -18,7 +18,7 @@ def create_topics():
 
     topics = [
         NewTopic(
-            topic="orders_2",
+            topic="orders",
             num_partitions=3,
             replication_factor=2,
         ),

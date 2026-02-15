@@ -24,7 +24,7 @@ import os
 import signal
 import sys
 import uuid
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, KafkaError, OFFSET_BEGINNING
 
 BOOTSTRAP_SERVERS = "localhost:9092,localhost:9094"
 TOPIC = "orders"
@@ -45,13 +45,19 @@ signal.signal(signal.SIGINT, signal_handler)
 
 
 def on_assign(consumer, partitions):
-    """Called when partitions are assigned to this consumer."""
+    """Start from the beginning only if there are no committed offsets yet."""
+    print(f"\n on_assign() Instance ID = {INSTANCE_ID}, {len(partitions)} partitions")
+    committed = consumer.committed(partitions)
+    for tp, committed_tp in zip(partitions, committed):
+        tp.offset = OFFSET_BEGINNING if committed_tp.offset < 0 else committed_tp.offset
+    consumer.assign(partitions)
     parts = [str(p.partition) for p in partitions]
     print(f"\n[{INSTANCE_ID}] 🔄 Assigned partitions: [{', '.join(parts)}]")
     print(f"[{INSTANCE_ID}] Listening...\n")
 
 
 def on_revoke(consumer, partitions):
+    print(f"\n on_revoke() Instance ID = {INSTANCE_ID}, {len(partitions)} partitions")
     """Called when partitions are revoked (rebalance happening)."""
     parts = [str(p.partition) for p in partitions]
     print(f"\n[{INSTANCE_ID}] ⚠️  Partitions revoked: [{', '.join(parts)}] (rebalancing...)")
@@ -62,7 +68,6 @@ def consume_group():
         "bootstrap.servers": BOOTSTRAP_SERVERS,
         # ALL instances use the SAME group.id → they form a consumer group
         "group.id": "order-processing-group",
-        "auto.offset.reset": "latest",  # Only read NEW messages
         "enable.auto.commit": True,
         # Faster rebalance detection for the demo
         "session.timeout.ms": 10000,

@@ -19,7 +19,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
-      - kafka-data:/var/lib/kafka/data
+      - kafka-data:/tmp/kafka-logs
 
   kafka2:
     image: apache/kafka:3.9.0
@@ -38,7 +38,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
-      - kafka2-data:/var/lib/kafka/data
+      - kafka2-data:/tmp/kafka-logs
     depends_on:
       - kafka
 
