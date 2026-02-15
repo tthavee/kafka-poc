@@ -11,7 +11,7 @@ Usage:
 
 from confluent_kafka.admin import AdminClient, NewTopic
 
-BOOTSTRAP_SERVERS = "localhost:9092"
+BOOTSTRAP_SERVERS = "localhost:9092,localhost:9094"
 
 def create_topics():
     admin = AdminClient({"bootstrap.servers": BOOTSTRAP_SERVERS})
@@ -20,7 +20,7 @@ def create_topics():
         NewTopic(
             topic="orders_2",
             num_partitions=3,
-            replication_factor=1,
+            replication_factor=2,
         ),
     ]
 

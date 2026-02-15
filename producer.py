@@ -16,7 +16,7 @@ import random
 import time
 from confluent_kafka import Producer
 
-BOOTSTRAP_SERVERS = "localhost:9092"
+BOOTSTRAP_SERVERS = "localhost:9092,localhost:9094"
 TOPIC = "orders"
 
 # Sample data

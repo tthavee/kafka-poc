@@ -18,7 +18,7 @@ import signal
 import sys
 from confluent_kafka import Consumer, KafkaError
 
-BOOTSTRAP_SERVERS = "localhost:9092"
+BOOTSTRAP_SERVERS = "localhost:9092,localhost:9094"
 TOPIC = "orders"
 
 running = True

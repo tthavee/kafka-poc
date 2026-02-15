@@ -26,7 +26,7 @@ import sys
 import uuid
 from confluent_kafka import Consumer, KafkaError
 
-BOOTSTRAP_SERVERS = "localhost:9092"
+BOOTSTRAP_SERVERS = "localhost:9092,localhost:9094"
 TOPIC = "orders"
 
 # Give each instance a short unique name for display
